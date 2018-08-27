@@ -24,7 +24,7 @@ public class Player {
     }
 
     public AttackResult attack(Player target) {
-        Injury injury = this.role.getInjuryCalculator().calculate(this, target, this.weapon);
+        Injury injury = this.role.calculateInjury(this, target, this.weapon);
         AttackResult attackResult = new AttackResult(injury, this, target);
         target.applyInjury(injury);
         return attackResult;
