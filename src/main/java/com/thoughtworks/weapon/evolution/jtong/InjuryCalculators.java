@@ -9,6 +9,7 @@ public class InjuryCalculators {
         if (amount < 0) {
             amount = 0;
         }
+
         return new Injury(amount, null);
     };
 

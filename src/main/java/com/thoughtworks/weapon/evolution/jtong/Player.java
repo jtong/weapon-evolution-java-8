@@ -1,7 +1,10 @@
 package com.thoughtworks.weapon.evolution.jtong;
 
+import static com.thoughtworks.weapon.evolution.jtong.NoArmor.NO_ARMOR;
+
 public class Player {
     private final String name;
+    private Armor armor = NO_ARMOR;
     private int hp;
     private int ap;
     private Role role;
@@ -14,13 +17,17 @@ public class Player {
         this.ap = ap;
         this.role = Role.NORMAL_PERSON;
     }
-
     public Player(String name, int hp, int ap, Role role, Weapon weapon) {
         this.name = name;
         this.hp = hp;
         this.ap = ap;
         this.role = role;
         this.weapon = weapon;
+    }
+
+    public Player(String name, int hp, int ap, Role role, Weapon weapon, Armor armor) {
+        this(name, hp, ap, role, weapon);
+        this.armor = armor;
     }
 
     public AttackResult attack(Player target) {
@@ -52,6 +59,6 @@ public class Player {
     }
 
     public int getDp() {
-        return dp;
+        return dp+this.armor.getDp();
     }
 }
