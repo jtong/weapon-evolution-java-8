@@ -18,7 +18,7 @@ public enum Role {
     }
 
     public Injury calculateInjury(Player source, Player target, Weapon weapon) {
-        return this.injuryCalculator.apply(new InjuryFactors(source, target,weapon));
+        return this.injuryCalculator.apply(new AttackFactors(source, target,weapon));
     }
 
     @Override

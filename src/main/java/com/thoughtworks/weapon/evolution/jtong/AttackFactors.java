@@ -1,7 +1,7 @@
 package com.thoughtworks.weapon.evolution.jtong;
 
 
-public class InjuryFactors implements ValueObject{
+public class AttackFactors implements ValueObject{
     private Player source;
     private Player target;
     private Weapon weapon;
@@ -18,7 +18,7 @@ public class InjuryFactors implements ValueObject{
         return weapon;
     }
 
-    public InjuryFactors(Player source, Player target, Weapon weapon) {
+    public AttackFactors(Player source, Player target, Weapon weapon) {
         this.source = source;
         this.target = target;
         this.weapon = weapon;
