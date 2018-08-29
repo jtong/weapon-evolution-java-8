@@ -61,4 +61,12 @@ public class Player {
     public int getDp() {
         return dp+this.armor.getDp();
     }
+
+    public Armor getArmor() {
+        return armor;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
 }
