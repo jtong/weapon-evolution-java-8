@@ -4,6 +4,7 @@ package com.thoughtworks.weapon.evolution.jtong;
 import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryBuildDSL;
 import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryDSLEnv;
 import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryResultContext;
+import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
 
 import java.util.function.Function;
 
@@ -61,11 +62,31 @@ public class InjuryCalculators {
         return new InjuryBuildDSL(factors)
                         .with(getSourceOrigionalAp().andThen(appendSourceWeaponAp())
                                 .andThen(getTargetOriginalDp())
+                                .andThen(getWeaponSkillEffect())
                                 .andThen(calculateInjuryAmount())
+                                .andThen(applyEffect())
                                 .andThen(getSourceWeaponName()))
                         .calculate();
     };
 
+    private static Function<InjuryDSLEnv, InjuryDSLEnv> applyEffect() {
+        return (InjuryDSLEnv env) -> {
+            Effect effect = env.getInjuryResultContext().getEffect();
+            effect.apply(env.getAttackFactors(), env.getInjuryResultContext());
+            return env;
+        };
+    }
+
+    public static Function<InjuryDSLEnv, InjuryDSLEnv> getWeaponSkillEffect() {
+        return (InjuryDSLEnv env) -> {
+            Weapon weapon = env.getAttackFactors().getSource().getWeapon();
+            //假装计算一下概率
+            //好，计算完了，概率命中
+            Effect triggeredEffect = weapon.getSkill().getEffect();
+            env.getInjuryResultContext().setEffect(triggeredEffect);
+            return env;
+        };
+    }
     private static Function<InjuryDSLEnv, InjuryDSLEnv> getSourceWeaponName() {
         return (InjuryDSLEnv env) -> {
             String weaponName = env.getAttackFactors().getSource().getWeapon().getName();

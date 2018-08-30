@@ -27,6 +27,8 @@ public class InjuryDSLEnv {
     }
 
     public Injury makeInjury() {
-        return new Injury(this.injuryResultContext.getInjuryAmount(), this.injuryResultContext.getWeaponName());
+        Injury injury = new Injury(this.injuryResultContext.getInjuryAmount(), this.injuryResultContext.getWeaponName());
+        injury.setEffect(this.injuryResultContext.getEffect());
+        return injury;
     }
 }
