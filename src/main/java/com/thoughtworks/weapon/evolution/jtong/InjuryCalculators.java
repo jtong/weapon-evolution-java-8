@@ -72,6 +72,9 @@ public class InjuryCalculators {
     private static Function<InjuryDSLEnv, InjuryDSLEnv> applyEffect() {
         return (InjuryDSLEnv env) -> {
             Effect effect = env.getInjuryResultContext().getEffect();
+            if(effect == null){
+                return env;
+            }
             effect.apply(env.getAttackFactors(), env.getInjuryResultContext());
             return env;
         };
@@ -80,6 +83,9 @@ public class InjuryCalculators {
     public static Function<InjuryDSLEnv, InjuryDSLEnv> getWeaponSkillEffect() {
         return (InjuryDSLEnv env) -> {
             Weapon weapon = env.getAttackFactors().getSource().getWeapon();
+            if (weapon.getSkill() == null) {
+                return env;
+            }
             //假装计算一下概率
             //好，计算完了，概率命中
             Effect triggeredEffect = weapon.getSkill().getEffect();

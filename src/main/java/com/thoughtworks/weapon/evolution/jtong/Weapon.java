@@ -1,5 +1,8 @@
 package com.thoughtworks.weapon.evolution.jtong;
 
+import com.thoughtworks.weapon.evolution.jtong.skills.Skill;
+import com.thoughtworks.weapon.evolution.jtong.skills.Skills;
+
 public class Weapon {
     private String name;
     private int ap;
@@ -14,6 +17,7 @@ public class Weapon {
         this(name, ap);
         this.skill = skill;
     }
+
 
     public int getAp() {
         return ap;

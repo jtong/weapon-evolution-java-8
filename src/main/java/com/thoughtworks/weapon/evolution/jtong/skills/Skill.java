@@ -1,11 +1,8 @@
-package com.thoughtworks.weapon.evolution.jtong;
+package com.thoughtworks.weapon.evolution.jtong.skills;
 
 import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
-import com.thoughtworks.weapon.evolution.jtong.effects.Effects;
 
-public enum Skill {
-    Deadly_Strike(Effects.DeadlyStrikeEffect);
-
+public class Skill {
     private Effect effect;
 
     Skill(Effect effect) {

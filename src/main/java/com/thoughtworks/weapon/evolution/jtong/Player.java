@@ -1,5 +1,11 @@
 package com.thoughtworks.weapon.evolution.jtong;
 
+import com.thoughtworks.weapon.evolution.jtong.state.PoisonState;
+import com.thoughtworks.weapon.evolution.jtong.state.State;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.thoughtworks.weapon.evolution.jtong.NoArmor.NO_ARMOR;
 
 public class Player {
@@ -10,6 +16,7 @@ public class Player {
     private Role role;
     private Weapon weapon;
     private int dp;
+    private List<State> states = new ArrayList<>();
 
     public Player(String name, int hp, int ap) {
         this.name = name;
@@ -68,5 +75,13 @@ public class Player {
 
     public Weapon getWeapon() {
         return weapon;
+    }
+
+    public List<State> getStates() {
+        return states;
+    }
+
+    public void addState(State state) {
+        states.add(state);
     }
 }
