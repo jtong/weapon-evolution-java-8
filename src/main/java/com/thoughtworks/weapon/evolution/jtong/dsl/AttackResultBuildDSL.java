@@ -7,16 +7,16 @@ import com.thoughtworks.weapon.evolution.jtong.Player;
 
 import java.util.function.Function;
 
-public class InjuryBuildDSL {
+public class AttackResultBuildDSL {
 
     private AttackFactors attackFactors;
-    private Function<InjuryDSLEnv, InjuryDSLEnv> injuryContextFunction;
+    private Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction;
 
-    public InjuryBuildDSL(AttackFactors attackFactors){
+    public AttackResultBuildDSL(AttackFactors attackFactors){
         this.attackFactors = attackFactors;
     }
 
-    public InjuryBuildDSL with(Function<InjuryDSLEnv, InjuryDSLEnv> injuryContextFunction){
+    public AttackResultBuildDSL with(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
         if(this.injuryContextFunction == null){
             this.injuryContextFunction = injuryContextFunction;
         }else{
@@ -28,8 +28,8 @@ public class InjuryBuildDSL {
 
 
     public AttackResult calculate(){
-        InjuryDSLEnv dslEnv = new InjuryDSLEnv(this.attackFactors, new InjuryResultContext());
-        InjuryDSLEnv resultEnv = injuryContextFunction.apply(dslEnv);
+        AttackResultDSLEnv dslEnv = new AttackResultDSLEnv(this.attackFactors, new AttackResultContext());
+        AttackResultDSLEnv resultEnv = injuryContextFunction.apply(dslEnv);
         Injury targetInjury = resultEnv.makeInjury();
         Injury sourceInjury = resultEnv.makeSourceInjury();
         Player target = dslEnv.getAttackFactors().getTarget();

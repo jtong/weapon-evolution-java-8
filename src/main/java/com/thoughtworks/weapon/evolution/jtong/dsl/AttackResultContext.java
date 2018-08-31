@@ -3,7 +3,7 @@ package com.thoughtworks.weapon.evolution.jtong.dsl;
 import com.thoughtworks.weapon.evolution.jtong.Injury;
 import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
 
-public class InjuryResultContext {
+public class AttackResultContext {
     private int ap;
     private int dp;
     private int injuryAmount;
@@ -15,10 +15,10 @@ public class InjuryResultContext {
         return sourceInjury;
     }
 
-    public InjuryResultContext() {
+    public AttackResultContext() {
     }
 
-    public InjuryResultContext setAp(int ap) {
+    public AttackResultContext setAp(int ap) {
         this.ap = ap;
         return this;
     }

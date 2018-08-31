@@ -1,9 +1,9 @@
 package com.thoughtworks.weapon.evolution.jtong;
 
 
-import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryBuildDSL;
-import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryDSLEnv;
-import com.thoughtworks.weapon.evolution.jtong.dsl.InjuryResultContext;
+import com.thoughtworks.weapon.evolution.jtong.dsl.AttackResultBuildDSL;
+import com.thoughtworks.weapon.evolution.jtong.dsl.AttackResultDSLEnv;
+import com.thoughtworks.weapon.evolution.jtong.dsl.AttackResultContext;
 import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
 
 import java.util.function.Function;
@@ -12,54 +12,54 @@ public class InjuryCalculators {
 
 
 
-    public static InjuryCalculator Stream_NORMAL_PERSON_MADE_INJURY_CALCULATOR =  (factors)-> new InjuryBuildDSL(factors)
+    public static InjuryCalculator Stream_NORMAL_PERSON_MADE_INJURY_CALCULATOR =  (factors)-> new AttackResultBuildDSL(factors)
             .with(calculateStateAffection()
                     .andThen(getSourceOrigionalAp())
                     .andThen(getTargetOriginalDp())
                     .andThen(calculateInjuryAmount()))
             .calculate();
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> calculateStateAffection() {
-        return (InjuryDSLEnv env) -> {
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> calculateStateAffection() {
+        return (AttackResultDSLEnv env) -> {
             Player source = env.getAttackFactors().getSource();
             source.getStates().stream().forEach(state->{
                 Injury sourceInjury = new Injury(state.getHarmValue(), state.getType());
                 source.applyInjury(sourceInjury);
-                env.getInjuryResultContext().setSourceInjury(sourceInjury);
+                env.getAttackResultContext().setSourceInjury(sourceInjury);
             });
 
             return env;
         };
     }
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> calculateInjuryAmount() {
-        return (InjuryDSLEnv env) -> {
-            InjuryResultContext resultContext = env.getInjuryResultContext();
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> calculateInjuryAmount() {
+        return (AttackResultDSLEnv env) -> {
+            AttackResultContext resultContext = env.getAttackResultContext();
             int amount = getInjuryAmount(resultContext.getAp(), resultContext.getDp());
-            env.getInjuryResultContext().setInjuryAmount(amount);
+            env.getAttackResultContext().setInjuryAmount(amount);
             return env;
         };
     }
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> getTargetOriginalDp() {
-        return (InjuryDSLEnv env) -> {
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> getTargetOriginalDp() {
+        return (AttackResultDSLEnv env) -> {
             int dp = getOriginalDp(env.getAttackFactors());
-            env.getInjuryResultContext().setDp(dp);
+            env.getAttackResultContext().setDp(dp);
             return env;
         };
     }
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> getSourceOrigionalAp() {
-        return (InjuryDSLEnv env) -> {
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> getSourceOrigionalAp() {
+        return (AttackResultDSLEnv env) -> {
             int ap = getOriginalAp(env.getAttackFactors());
-            env.getInjuryResultContext().setAp(ap);
+            env.getAttackResultContext().setAp(ap);
             return env;
         };
     }
 
 
     public static InjuryCalculator Stream_SOLIDER_MADE_INJURY_CALCULATOR =  (factors)-> {
-        return new InjuryBuildDSL(factors)
+        return new AttackResultBuildDSL(factors)
                         .with(getSourceOrigionalAp().andThen(appendSourceWeaponAp())
                                 .andThen(getTargetOriginalDp())
                                 .andThen(getWeaponSkillEffect())
@@ -69,19 +69,19 @@ public class InjuryCalculators {
                         .calculate();
     };
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> applyEffect() {
-        return (InjuryDSLEnv env) -> {
-            Effect effect = env.getInjuryResultContext().getEffect();
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> applyEffect() {
+        return (AttackResultDSLEnv env) -> {
+            Effect effect = env.getAttackResultContext().getEffect();
             if(effect == null){
                 return env;
             }
-            effect.apply(env.getAttackFactors(), env.getInjuryResultContext());
+            effect.apply(env.getAttackFactors(), env.getAttackResultContext());
             return env;
         };
     }
 
-    public static Function<InjuryDSLEnv, InjuryDSLEnv> getWeaponSkillEffect() {
-        return (InjuryDSLEnv env) -> {
+    public static Function<AttackResultDSLEnv, AttackResultDSLEnv> getWeaponSkillEffect() {
+        return (AttackResultDSLEnv env) -> {
             Weapon weapon = env.getAttackFactors().getSource().getWeapon();
             if (weapon.getSkill() == null) {
                 return env;
@@ -89,23 +89,23 @@ public class InjuryCalculators {
             //假装计算一下概率
             //好，计算完了，概率命中
             Effect triggeredEffect = weapon.getSkill().getEffect();
-            env.getInjuryResultContext().setEffect(triggeredEffect);
+            env.getAttackResultContext().setEffect(triggeredEffect);
             return env;
         };
     }
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> getSourceWeaponName() {
-        return (InjuryDSLEnv env) -> {
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> getSourceWeaponName() {
+        return (AttackResultDSLEnv env) -> {
             String weaponName = env.getAttackFactors().getSource().getWeapon().getName();
-            env.getInjuryResultContext().setWeaponName(weaponName);
+            env.getAttackResultContext().setWeaponName(weaponName);
             return env;
         };
     }
 
-    private static Function<InjuryDSLEnv, InjuryDSLEnv> appendSourceWeaponAp() {
-        return (InjuryDSLEnv env) -> {
-            int originalAp = env.getInjuryResultContext().getAp();
+    private static Function<AttackResultDSLEnv, AttackResultDSLEnv> appendSourceWeaponAp() {
+        return (AttackResultDSLEnv env) -> {
+            int originalAp = env.getAttackResultContext().getAp();
             int weaponAp = env.getAttackFactors().getSource().getWeapon().getAp();
-            env.getInjuryResultContext().setAp(originalAp+weaponAp);
+            env.getAttackResultContext().setAp(originalAp+weaponAp);
             return env;
         };
     }
