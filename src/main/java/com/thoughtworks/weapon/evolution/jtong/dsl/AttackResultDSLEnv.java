@@ -6,6 +6,7 @@ import com.thoughtworks.weapon.evolution.jtong.Injury;
 public class AttackResultDSLEnv {
     private final AttackFactors attackFactors;
     private final AttackResultContext attackResultContext;
+    private boolean aBreak;
 
 
     public AttackResultDSLEnv(AttackFactors attackFactors, AttackResultContext attackResultContext) {
@@ -31,4 +32,11 @@ public class AttackResultDSLEnv {
         return this.attackResultContext.getSourceInjury();
     }
 
+    public boolean isBreak() {
+        return aBreak;
+    }
+
+    public void setBreak(boolean aBreak) {
+        this.aBreak = aBreak;
+    }
 }

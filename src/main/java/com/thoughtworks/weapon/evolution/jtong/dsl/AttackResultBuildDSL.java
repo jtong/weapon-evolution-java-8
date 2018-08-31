@@ -5,37 +5,54 @@ import com.thoughtworks.weapon.evolution.jtong.AttackResult;
 import com.thoughtworks.weapon.evolution.jtong.Injury;
 import com.thoughtworks.weapon.evolution.jtong.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class AttackResultBuildDSL {
 
     private AttackFactors attackFactors;
-    private Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction;
+    private List<Function<AttackResultDSLEnv, AttackResultDSLEnv>> injuryContextFunctions = new ArrayList<>();
 
     public AttackResultBuildDSL(AttackFactors attackFactors){
         this.attackFactors = attackFactors;
     }
 
-    public AttackResultBuildDSL with(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
-        if(this.injuryContextFunction == null){
-            this.injuryContextFunction = injuryContextFunction;
-        }else{
-            this.injuryContextFunction =
-                    this.injuryContextFunction.andThen(injuryContextFunction);
-        }
+    public AttackResultBuildDSL startWith(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
+        injuryContextFunctions = new ArrayList<>();
+        injuryContextFunctions.add(injuryContextFunction);
+        return this;
+    }
+
+    public AttackResultBuildDSL andThen(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
+        injuryContextFunctions.add(injuryContextFunction);
         return this;
     }
 
 
     public AttackResult calculate(){
-        AttackResultDSLEnv dslEnv = new AttackResultDSLEnv(this.attackFactors, new AttackResultContext());
-        AttackResultDSLEnv resultEnv = injuryContextFunction.apply(dslEnv);
+
+//        AttackResultDSLEnv resultEnv = injuryContextFunctions.apply(dslEnv);
+        AttackResultDSLEnv resultEnv = doCalculate();
+
         Injury targetInjury = resultEnv.makeInjury();
         Injury sourceInjury = resultEnv.makeSourceInjury();
-        Player target = dslEnv.getAttackFactors().getTarget();
-        Player source = dslEnv.getAttackFactors().getSource();
+        Player target = resultEnv.getAttackFactors().getTarget();
+        Player source = resultEnv.getAttackFactors().getSource();
 
-        return new AttackResult(source, sourceInjury, target, targetInjury);
+        return new AttackResult(source, sourceInjury, target, targetInjury, resultEnv.isBreak());
+    }
+
+    private AttackResultDSLEnv doCalculate() {
+        AttackResultDSLEnv dslEnv = new AttackResultDSLEnv(this.attackFactors, new AttackResultContext());
+
+        for (Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction: injuryContextFunctions) {
+            dslEnv = injuryContextFunction.apply(dslEnv);
+            if(dslEnv.isBreak()){
+                break;
+            }
+        }
+        return dslEnv;
     }
 
 

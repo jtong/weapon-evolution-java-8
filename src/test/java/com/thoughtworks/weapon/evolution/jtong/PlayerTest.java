@@ -83,4 +83,18 @@ class PlayerTest {
         assertThat(states.size(), is(1));
         assertThat(states.get(0).getType(), is(StateTypes.Poison));
     }
+
+
+    @Test
+    @DisplayName("Poisoned normal person die on attacking")
+    void testPoisoned2() {
+        Player zhangsan = new Player("张三", 100, 10, Role.SOLIDER, new Weapon("优质毒剑", 2, Skills.Poison_Strike(2)), new Armor("优质皮甲", 2));
+        Player lisi = new Player("李四", 2, 8);
+        lisi.addState(new PoisonState(2));
+        AttackResult attack_string = lisi.attack(zhangsan);
+        assertThat(attack_string.toStringValue(), is("李四受到2点毒性伤害, 李四剩余生命：0"));
+        List<State> states = lisi.getStates();
+        assertThat(states.size(), is(1));
+        assertThat(states.get(0).getType(), is(StateTypes.Poison));
+    }
 }

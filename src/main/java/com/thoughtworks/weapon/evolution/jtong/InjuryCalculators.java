@@ -11,20 +11,22 @@ import java.util.function.Function;
 public class InjuryCalculators {
 
 
-
-    public static InjuryCalculator Stream_NORMAL_PERSON_MADE_INJURY_CALCULATOR =  (factors)-> new AttackResultBuildDSL(factors)
-            .with(calculateStateAffection()
-                    .andThen(getSourceOrigionalAp())
-                    .andThen(getTargetOriginalDp())
-                    .andThen(calculateInjuryAmount()))
+    public static InjuryCalculator Stream_NORMAL_PERSON_MADE_INJURY_CALCULATOR = (factors) -> new AttackResultBuildDSL(factors)
+            .startWith(calculateStateAffection())
+            .andThen(getSourceOrigionalAp())
+            .andThen(getTargetOriginalDp())
+            .andThen(calculateInjuryAmount())
             .calculate();
 
     private static Function<AttackResultDSLEnv, AttackResultDSLEnv> calculateStateAffection() {
         return (AttackResultDSLEnv env) -> {
             Player source = env.getAttackFactors().getSource();
-            source.getStates().stream().forEach(state->{
+            source.getStates().stream().forEach(state -> {
                 Injury sourceInjury = new Injury(state.getHarmValue(), state.getType());
                 source.applyInjury(sourceInjury);
+                if (source.getHp() <= 0) {
+                    env.setBreak(true);
+                }
                 env.getAttackResultContext().setSourceInjury(sourceInjury);
             });
 
@@ -58,21 +60,22 @@ public class InjuryCalculators {
     }
 
 
-    public static InjuryCalculator Stream_SOLIDER_MADE_INJURY_CALCULATOR =  (factors)-> {
+    public static InjuryCalculator Stream_SOLIDER_MADE_INJURY_CALCULATOR = (factors) -> {
         return new AttackResultBuildDSL(factors)
-                        .with(getSourceOrigionalAp().andThen(appendSourceWeaponAp())
-                                .andThen(getTargetOriginalDp())
-                                .andThen(getWeaponSkillEffect())
-                                .andThen(calculateInjuryAmount())
-                                .andThen(applyEffect())
-                                .andThen(getSourceWeaponName()))
-                        .calculate();
+                .startWith(getSourceOrigionalAp())
+                .andThen(appendSourceWeaponAp())
+                .andThen(getTargetOriginalDp())
+                .andThen(getWeaponSkillEffect())
+                .andThen(calculateInjuryAmount())
+                .andThen(applyEffect())
+                .andThen(getSourceWeaponName())
+                .calculate();
     };
 
     private static Function<AttackResultDSLEnv, AttackResultDSLEnv> applyEffect() {
         return (AttackResultDSLEnv env) -> {
             Effect effect = env.getAttackResultContext().getEffect();
-            if(effect == null){
+            if (effect == null) {
                 return env;
             }
             effect.apply(env.getAttackFactors(), env.getAttackResultContext());
@@ -93,6 +96,7 @@ public class InjuryCalculators {
             return env;
         };
     }
+
     private static Function<AttackResultDSLEnv, AttackResultDSLEnv> getSourceWeaponName() {
         return (AttackResultDSLEnv env) -> {
             String weaponName = env.getAttackFactors().getSource().getWeapon().getName();
@@ -105,11 +109,10 @@ public class InjuryCalculators {
         return (AttackResultDSLEnv env) -> {
             int originalAp = env.getAttackResultContext().getAp();
             int weaponAp = env.getAttackFactors().getSource().getWeapon().getAp();
-            env.getAttackResultContext().setAp(originalAp+weaponAp);
+            env.getAttackResultContext().setAp(originalAp + weaponAp);
             return env;
         };
     }
-
 
 
     private static int getInjuryAmount(int ap, int dp) {
@@ -137,8 +140,8 @@ public class InjuryCalculators {
 
     private static int getWeaponAp(AttackFactors factors) {
         int weaponAp = 0;
-        if(factors.getWeapon() !=null) {
-            weaponAp+= factors.getWeapon().getAp();
+        if (factors.getWeapon() != null) {
+            weaponAp += factors.getWeapon().getAp();
         }
         return weaponAp;
     }

@@ -9,6 +9,12 @@ public class AttackResult {
     private Injury sourceInjury;
     private Injury injury;
 
+    public boolean isBreak() {
+        return isBreak;
+    }
+
+    private boolean isBreak;
+
     public Injury getInjury() {
         return injury;
     }
@@ -16,28 +22,34 @@ public class AttackResult {
     private final Player source;
     private final Player target;
 
-    public AttackResult(Player source, Injury sourceInjury, Player target, Injury targetInjury) {
+    public AttackResult(Player source, Injury sourceInjury, Player target, Injury targetInjury, boolean isBreak) {
         this.source = source;
         this.sourceInjury = sourceInjury;
         this.target = target;
         this.injury = targetInjury;
+        this.isBreak = isBreak;
     }
 
     public String toStringValue() {
 
-        return calculateStateString() +
-                this.source.getRole() +  this.source.getName()+(injury.getWeaponName() != null ? ("用"+ injury.getWeaponName()) : "")
-                +"攻击了" + this.target.getRole() + this.target.getName()+","
+        String stateString = calculateStateString();
+
+        return stateString + (isBreak ? "" : ("".equals(stateString)?"":"\n") + buildAttackString());
+    }
+
+    private String buildAttackString() {
+        return this.source.getRole() + this.source.getName() + (injury.getWeaponName() != null ? ("用" + injury.getWeaponName()) : "")
+                + "攻击了" + this.target.getRole() + this.target.getName() + ","
                 + calculateEffectString(this.source, this.target, injury.getEffect())
-               + this.target.getName() + "受到了" + this.injury.getAmount()+ "点伤害,"
+                + this.target.getName() + "受到了" + this.injury.getAmount() + "点伤害,"
                 + calculatePostEffectString(this.source, this.target, injury.getEffect())
-                + target.getName() +"剩余生命："+ this.target.getHp();
+                + target.getName() + "剩余生命：" + this.target.getHp();
     }
 
     private String calculateStateString() {
         if (this.sourceInjury != null) {
             return this.source.getName()+"受到"+this.sourceInjury.getAmount()+"点"+translateStateType(this.sourceInjury.getStateType())+"伤害, "
-                    + this.source.getName() + "剩余生命："+ this.source.getHp() + "\n";
+                    + this.source.getName() + "剩余生命："+ this.source.getHp() ;
         }
         return "";
     }
