@@ -9,20 +9,28 @@ import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
 import java.util.function.Function;
 
 public class InjuryCalculators {
-    public static InjuryCalculator NORMAL_PERSON_MADE_INJURY_CALCULATOR =  (factors)->{
-        int ap = getOriginalAp(factors);
-        int dp = getOriginalDp(factors);
-        int amount = getInjuryAmount(ap, dp);
 
-        return new Injury(amount, null);
-    };
 
 
     public static InjuryCalculator Stream_NORMAL_PERSON_MADE_INJURY_CALCULATOR =  (factors)-> new InjuryBuildDSL(factors)
-            .with(getSourceOrigionalAp()
+            .with(calculateStateAffection()
+                    .andThen(getSourceOrigionalAp())
                     .andThen(getTargetOriginalDp())
                     .andThen(calculateInjuryAmount()))
             .calculate();
+
+    private static Function<InjuryDSLEnv, InjuryDSLEnv> calculateStateAffection() {
+        return (InjuryDSLEnv env) -> {
+            Player source = env.getAttackFactors().getSource();
+            source.getStates().stream().forEach(state->{
+                Injury sourceInjury = new Injury(state.getHarmValue(), state.getType());
+                source.applyInjury(sourceInjury);
+                env.getInjuryResultContext().setSourceInjury(sourceInjury);
+            });
+
+            return env;
+        };
+    }
 
     private static Function<InjuryDSLEnv, InjuryDSLEnv> calculateInjuryAmount() {
         return (InjuryDSLEnv env) -> {
@@ -49,14 +57,6 @@ public class InjuryCalculators {
         };
     }
 
-    public static InjuryCalculator SOLIDER_MADE_INJURY_CALCULATOR = (attackFactors)->{
-        int dp = getOriginalDp(attackFactors);
-        int originalAp = getOriginalAp(attackFactors);
-        int ap = appendWeaponAp(originalAp, attackFactors);
-
-        int amount = getInjuryAmount(ap, dp);
-        return new Injury(amount, attackFactors.getWeapon().getName());
-    };
 
     public static InjuryCalculator Stream_SOLIDER_MADE_INJURY_CALCULATOR =  (factors)-> {
         return new InjuryBuildDSL(factors)

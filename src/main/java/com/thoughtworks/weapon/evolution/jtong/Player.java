@@ -38,13 +38,13 @@ public class Player {
     }
 
     public AttackResult attack(Player target) {
-        Injury injury = this.role.calculateInjury(this, target, this.weapon);
-        AttackResult attackResult = new AttackResult(injury, this, target);
+        AttackResult attackResult = this.role.calculateInjury(this, target, this.weapon);
+        Injury injury = attackResult.getInjury();
         target.applyInjury(injury);
         return attackResult;
     }
 
-    private void applyInjury(Injury injury) {
+    void applyInjury(Injury injury) {
         this.hp -= injury.getAmount();
     }
 

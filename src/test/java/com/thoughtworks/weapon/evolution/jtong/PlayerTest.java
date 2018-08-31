@@ -1,5 +1,6 @@
 package com.thoughtworks.weapon.evolution.jtong;
 import com.thoughtworks.weapon.evolution.jtong.skills.Skills;
+import com.thoughtworks.weapon.evolution.jtong.state.PoisonState;
 import com.thoughtworks.weapon.evolution.jtong.state.State;
 import com.thoughtworks.weapon.evolution.jtong.state.StateTypes;
 import org.junit.jupiter.api.*;
@@ -65,6 +66,19 @@ class PlayerTest {
         Player lisi = new Player("李四", 100, 8);
         AttackResult attack_string = zhangsan.attack(lisi);
         assertThat(attack_string.toStringValue(), is("战士张三用优质毒剑攻击了普通人李四,李四受到了12点伤害,李四中毒了,李四剩余生命：88"));
+        List<State> states = lisi.getStates();
+        assertThat(states.size(), is(1));
+        assertThat(states.get(0).getType(), is(StateTypes.Poison));
+    }
+
+    @Test
+    @DisplayName("Poisoned normal person attack")
+    void testPoisoned1() {
+        Player zhangsan = new Player("张三", 100, 10, Role.SOLIDER, new Weapon("优质毒剑", 2, Skills.Poison_Strike(2)), new Armor("优质皮甲", 2));
+        Player lisi = new Player("李四", 100, 8);
+        lisi.addState(new PoisonState(2));
+        AttackResult attack_string = lisi.attack(zhangsan);
+        assertThat(attack_string.toStringValue(), is("李四受到2点毒性伤害, 李四剩余生命：98\n普通人李四攻击了战士张三,张三受到了6点伤害,张三剩余生命：94"));
         List<State> states = lisi.getStates();
         assertThat(states.size(), is(1));
         assertThat(states.get(0).getType(), is(StateTypes.Poison));

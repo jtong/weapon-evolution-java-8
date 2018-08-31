@@ -1,5 +1,6 @@
 package com.thoughtworks.weapon.evolution.jtong.dsl;
 
+import com.thoughtworks.weapon.evolution.jtong.Injury;
 import com.thoughtworks.weapon.evolution.jtong.effects.Effect;
 
 public class InjuryResultContext {
@@ -8,6 +9,11 @@ public class InjuryResultContext {
     private int injuryAmount;
     private String weaponName;
     private Effect effect;
+    private Injury sourceInjury;
+
+    public Injury getSourceInjury() {
+        return sourceInjury;
+    }
 
     public InjuryResultContext() {
     }
@@ -52,4 +58,10 @@ public class InjuryResultContext {
     public Effect getEffect() {
         return effect;
     }
+
+    public void setSourceInjury(Injury sourceInjury) {
+
+        this.sourceInjury = sourceInjury;
+    }
+
 }

@@ -1,10 +1,10 @@
 package com.thoughtworks.weapon.evolution.jtong.dsl;
 
 import com.thoughtworks.weapon.evolution.jtong.AttackFactors;
+import com.thoughtworks.weapon.evolution.jtong.AttackResult;
 import com.thoughtworks.weapon.evolution.jtong.Injury;
+import com.thoughtworks.weapon.evolution.jtong.Player;
 
-import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class InjuryBuildDSL {
@@ -27,9 +27,15 @@ public class InjuryBuildDSL {
     }
 
 
-    public Injury calculate(){
+    public AttackResult calculate(){
         InjuryDSLEnv dslEnv = new InjuryDSLEnv(this.attackFactors, new InjuryResultContext());
-        return injuryContextFunction.apply(dslEnv).makeInjury();
+        InjuryDSLEnv resultEnv = injuryContextFunction.apply(dslEnv);
+        Injury targetInjury = resultEnv.makeInjury();
+        Injury sourceInjury = resultEnv.makeSourceInjury();
+        Player target = dslEnv.getAttackFactors().getTarget();
+        Player source = dslEnv.getAttackFactors().getSource();
+
+        return new AttackResult(source, sourceInjury, target, targetInjury);
     }
 
 

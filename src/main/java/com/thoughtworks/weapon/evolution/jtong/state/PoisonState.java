@@ -4,7 +4,7 @@ public class PoisonState extends State{
     private int harmValue;
 
     public PoisonState(int harmValue) {
-        this.harmValue = harmValue;
+        this.setHarmValue( harmValue );
         this.setType(StateTypes.Poison);
     }
 }
