@@ -5,6 +5,7 @@ import com.thoughtworks.weapon.evolution.jtong.state.State;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.thoughtworks.weapon.evolution.jtong.NoArmor.NO_ARMOR;
 
@@ -82,6 +83,17 @@ public class Player {
     }
 
     public void addState(State state) {
-        states.add(state);
+        if(states.stream().filter(oldState -> oldState.getType().equals(state.getType())).findFirst().isPresent()){
+            states = states.stream().map(oldState ->{
+                if(oldState.getType().equals(state.getType())){
+                    return oldState.getType().buildState(oldState.getHarmValue()+state.getHarmValue());
+                }
+                return oldState;
+            }).collect(Collectors.toList());
+
+        } else {
+            states.add(state);
+
+        }
     }
 }

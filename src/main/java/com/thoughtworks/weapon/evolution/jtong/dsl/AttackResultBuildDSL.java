@@ -24,7 +24,7 @@ public class AttackResultBuildDSL {
         return this;
     }
 
-    public AttackResultBuildDSL andThen(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
+    public AttackResultBuildDSL then(Function<AttackResultDSLEnv, AttackResultDSLEnv> injuryContextFunction){
         injuryContextFunctions.add(injuryContextFunction);
         return this;
     }
